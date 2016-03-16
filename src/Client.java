@@ -66,6 +66,7 @@ public class Client implements Runnable {
 					} else if (message.startsWith("worldstate::")) {
 						//Start timer
 						long tStart = System.currentTimeMillis();
+						Hashtable<Integer,Drapeau> drapeaux = new Hashtable<Integer,Drapeau>();
 						// Lire le worldState
 						String[] components = message.substring("worldstate::".length()).split(";", -1);
 						// Déduire le numéro du tour
@@ -174,10 +175,21 @@ public class Client implements Runnable {
 								}
 							}
 						}
-						// Déduire le tableau des objectifs
+						// Déduire le tableau des drapeaux
 						String FlagState = components[2];
+						System.out.println(FlagState);
+						String[] FlagStateComponents = PlayerState.split(":", -1);
+						int indexDrapeau = 0;
+						for (String s : FlagStateComponents) 
+						{
+							String[] FlagComponents = s.split(",", -1);
+							int posX = Integer.parseInt(FlagComponents[1]);
+							int posY = Integer.parseInt(FlagComponents[2]);
+							indexDrapeau++;
+							drapeaux.put(indexDrapeau,new Drapeau(posX,posY));
+						}
 						
-						
+						// Déduire les drapeaux libres et les drapeaux pris
 						
 						// On joue
 						ArrayList<Client.Dir> PossibleDirections = utils.MouvementPossibles(joueurs.get((int)this.teamId), joueurs);
