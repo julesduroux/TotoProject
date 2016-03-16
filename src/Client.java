@@ -46,6 +46,7 @@ public class Client implements Runnable {
 		String message;
 		// Dictionnaire de joueurs
 		Hashtable<Integer,Joueur> joueurs = new Hashtable<Integer,Joueur>();
+		Joueur currentPlayer;
 		int[] OrdreJoueurs = new int[6];
 		BufferedReader in;
 		PrintWriter out;
@@ -118,6 +119,9 @@ public class Client implements Runnable {
 							}
 
 						}
+						// On définit le joueur par défaut
+						currentPlayer = joueurs.get((int)this.teamId);
+						
 						// On met à jour les joueurs
 						for (String s : PlayerStateComponents) 
 						{
@@ -194,7 +198,11 @@ public class Client implements Runnable {
 						{
 							for (int joueur : joueurs.keySet())
 							{
-								if ((drapeaux.get(drapeau).getX() == joueurs.get(joueur).getX()) && (drapeaux.get(drapeau).getY() == joueurs.get(joueur).getY()) )
+								if ((drapeaux.get(drapeau).getX() == joueurs.get(joueur).getBaseX()) && (drapeaux.get(drapeau).getY() == joueurs.get(joueur).getBaseY()) )
+								{
+									// le drapeau est dans une base
+								}
+								else if ((drapeaux.get(drapeau).getX() == joueurs.get(joueur).getX()) && (drapeaux.get(drapeau).getY() == joueurs.get(joueur).getY()) )
 								{
 									joueurs.get(joueur).SetDrapeau(true);
 									drapeaux.get(drapeau).SetFree(false);
@@ -218,13 +226,13 @@ public class Client implements Runnable {
 						int xObj;
 						int yObj;
 						// Pour le moment : l'objectif est le drapeau le plus proche si on n'a pas de drapeau
-						if (!joueurs.get(this.teamId).HasFlag() && drapeauxLibres.size() > 0)
+						if (!currentPlayer.HasFlag() && drapeauxLibres.size() > 0)
 						{
 							int minValue = 999;
 							int drapeauChoisi = 1;
 							for (Integer drapeau : drapeauxLibres)
 							{
-								int distance = Math.abs(drapeaux.get(drapeau).getX() - joueurs.get(this.teamId).getX()) + Math.abs(drapeaux.get(drapeau).getY() - joueurs.get(this.teamId).getY());
+								int distance = Math.abs(drapeaux.get(drapeau).getX() - currentPlayer.getX()) + Math.abs(drapeaux.get(drapeau).getY() - currentPlayer.getY());
 								if ( distance < minValue )
 								{
 									minValue = distance;
@@ -238,12 +246,10 @@ public class Client implements Runnable {
 						// Si on a un drapeau, c'est sa base
 						else
 						{
-							xObj = joueurs.get(this.teamId).getBaseX();
-							yObj = joueurs.get(this.teamId).getBaseY();
+							xObj = currentPlayer.getBaseX();
+							yObj = currentPlayer.getBaseY();
 						}
 						
-						// On utilise la bonne commande pour aller sur l'objectif
-						Joueur currentPlayer = joueurs.get(this.teamId);
 						
 						
 						// On joue
@@ -253,7 +259,19 @@ public class Client implements Runnable {
 						
 						if (PossibleDirections.contains(Dir.EST) && xObj > currentPlayer.getX())
 						{
-							
+							order = Dir.EST.code;
+						}
+						else if (PossibleDirections.contains(Dir.OUEST) && xObj < currentPlayer.getX())
+						{
+							order = Dir.OUEST.code;
+						}
+						else if (PossibleDirections.contains(Dir.NORD) && yObj < currentPlayer.getY())
+						{
+							order = Dir.NORD.code;
+						}
+						else if (PossibleDirections.contains(Dir.SUD) && yObj > currentPlayer.getY())
+						{
+							order = Dir.SUD.code;
 						}
 						else
 						{
