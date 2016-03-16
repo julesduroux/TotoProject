@@ -14,7 +14,7 @@ public class Client implements Runnable {
 
 	enum Dir {
 		NORD("N"), SUD("S"), EST("E"), OUEST("O"), JUMP_NORD("JN"), JUMP_SUD("JS"), JUMP_EST("JE"), JUMP_OUEST(
-				"JO"), NORD2("N"), SUD2("S"), EST2("E"), OUEST2("O"), NORD3("N"), SUD3("S"), EST3("E"), OUEST3("O");
+				"JO");
 		String code;
 		Dir(String dir) {
 			code = dir;
@@ -49,6 +49,7 @@ public class Client implements Runnable {
 		BufferedReader in;
 		PrintWriter out;
 		try {
+			System.out.println("Pour voir la partie : http://" + ipServer + ":8080/?gameId=" + gameId);
 			socket = new Socket(ipServer, socketNumber);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = new PrintWriter(socket.getOutputStream());
@@ -63,6 +64,8 @@ public class Client implements Runnable {
 					if (message.equalsIgnoreCase("Inscription OK")) {
 						System.out.println("Je me suis bien inscrit a la battle");
 					} else if (message.startsWith("worldstate::")) {
+						//Start timer
+						long tStart = System.currentTimeMillis();
 						// Lire le worldState
 						String[] components = message.substring("worldstate::".length()).split(";", -1);
 						// Déduire le numéro du tour
@@ -112,7 +115,6 @@ public class Client implements Runnable {
 								}
 							}
 
-							System.out.println(OrdreJoueurs[0]+","+OrdreJoueurs[1]+","+OrdreJoueurs[2]+","+OrdreJoueurs[3]+","+OrdreJoueurs[4]+","+OrdreJoueurs[5]);
 						}
 						// On met à jour les joueurs
 						for (String s : PlayerStateComponents) 
@@ -150,14 +152,23 @@ public class Client implements Runnable {
 										{
 											cibles.add(defenseur.getTeamID());
 											defenseur.immunites.add(key);
-											attaques.add(key.toString()+indexDefenseur.toString());
-										}
+											attaques.add(key.toString()+indexDefenseur.toString());										}
+									}
+								}
+							}
+							if (nbAttaques == 1 && cibles.size() == 1)
+							{
+								for (Integer teamID : OrdreJoueurs)
+								{
+									if ((int)cibles.get(0) != teamID)
+									{
+										joueurs.get(teamID).immunites.remove(key);
 									}
 								}
 							}
 							else if (nbAttaques > 1)
 							{
-								for (Integer teamID : cibles)
+								for (Integer teamID : OrdreJoueurs)
 								{
 									joueurs.get(teamID).immunites.remove(key);
 								}
@@ -169,7 +180,10 @@ public class Client implements Runnable {
 						
 						
 						// On joue
-						String order = computeDirection().code;
+						ArrayList<Client.Dir> PossibleDirections = utils.MouvementPossibles(joueurs.get((int)this.teamId), joueurs);
+						int index = rand.nextInt(PossibleDirections.size());
+				        String order = PossibleDirections.get(index).code;
+						
 						//On affiche l'état du monde
 						for(Integer key: OrdreJoueurs)
 						{
@@ -180,6 +194,9 @@ public class Client implements Runnable {
 						String action = secret + "%%action::" + teamId + ";" + gameId + ";" + round + ";"
 								+ order;
 						//System.out.println(action);
+						long tEnd = System.currentTimeMillis();
+						long tDelta = tEnd - tStart;
+						System.out.println("Ellapsed time : "+tDelta);
 						out.println(action);
 						out.flush();
 					} else if (message.equalsIgnoreCase("Inscription KO")) {
