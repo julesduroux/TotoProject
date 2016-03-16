@@ -69,6 +69,11 @@ public class Joueur {
 		 return immunites.contains(ennemi);
 	 }
 	 
+	 public void SetDrapeau(boolean bool)
+	 {
+		 this.porteUnDrapeau = bool;
+	 }
+	 
 	 public boolean InBase(){
 		 return (this.xBasePosition == this.xPosition) && (this.yBasePosition == this.yPosition);
 	 }
@@ -120,6 +125,6 @@ public class Joueur {
 	 public String Afficher()
 	 {
 		 //return "Le joueur	" + this.teamID + "	est en (	" + this.xPosition + "	,	" + this.yPosition + "	), a	" + this.points + "	points,	" + this.nbSauts + "	sauts restants, est	" + this.status + "	, a une immu contre	" + Arrays.toString(immunites.toArray()) + "	et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + ").";
-		 return "Le joueur " + this.teamID + " est en ( " + this.xPosition + " , " + this.yPosition + " ), a " + this.points + " points, " + this.nbSauts + " sauts restants, est " + this.status + ", a une immu contre " + Arrays.toString(immunites.toArray()) + " et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + ").";
+		 return "Le joueur " + this.teamID + " est en (" + this.xPosition + ", " + this.yPosition + "), a " + this.points + " points, a un drapeau : " + this.porteUnDrapeau + ", a " + this.nbSauts + " sauts restants, est " + this.status + ", a une immu contre " + Arrays.toString(immunites.toArray()) + " et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + ").";
 	 }
 }

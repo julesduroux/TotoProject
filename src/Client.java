@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Random;
 
@@ -177,24 +178,88 @@ public class Client implements Runnable {
 						}
 						// Déduire le tableau des drapeaux
 						String FlagState = components[2];
-						System.out.println(FlagState);
-						String[] FlagStateComponents = PlayerState.split(":", -1);
+						String[] FlagStateComponents = FlagState.split(":", -1);
 						int indexDrapeau = 0;
 						for (String s : FlagStateComponents) 
 						{
 							String[] FlagComponents = s.split(",", -1);
-							int posX = Integer.parseInt(FlagComponents[1]);
-							int posY = Integer.parseInt(FlagComponents[2]);
+							int posX = Integer.parseInt(FlagComponents[0]);
+							int posY = Integer.parseInt(FlagComponents[1]);
 							indexDrapeau++;
 							drapeaux.put(indexDrapeau,new Drapeau(posX,posY));
 						}
 						
 						// Déduire les drapeaux libres et les drapeaux pris
+						for (int drapeau : drapeaux.keySet()) 
+						{
+							for (int joueur : joueurs.keySet())
+							{
+								if ((drapeaux.get(drapeau).getX() == joueurs.get(joueur).getX()) && (drapeaux.get(drapeau).getY() == joueurs.get(joueur).getY()) )
+								{
+									joueurs.get(joueur).SetDrapeau(true);
+									drapeaux.get(drapeau).SetFree(false);
+								}
+							}
+						}
+						
+						// Liste des drapeaux libres
+						ArrayList<Integer> drapeauxLibres = new ArrayList<Integer>();
+						for (int drapeau : drapeaux.keySet()) 
+						{
+							if (drapeaux.get(drapeau).IsFree())
+							{
+								drapeauxLibres.add(drapeau);
+							}
+						}
+						
+						System.out.println(Arrays.toString(drapeauxLibres.toArray()));
+						
+						//On choisit l'objectif
+						int xObj;
+						int yObj;
+						// Pour le moment : l'objectif est le drapeau le plus proche si on n'a pas de drapeau
+						if (!joueurs.get(this.teamId).HasFlag() && drapeauxLibres.size() > 0)
+						{
+							int minValue = 999;
+							int drapeauChoisi = 1;
+							for (Integer drapeau : drapeauxLibres)
+							{
+								int distance = Math.abs(drapeaux.get(drapeau).getX() - joueurs.get(this.teamId).getX()) + Math.abs(drapeaux.get(drapeau).getY() - joueurs.get(this.teamId).getY());
+								if ( distance < minValue )
+								{
+									minValue = distance;
+									drapeauChoisi = drapeau;
+								}
+							}
+							
+							xObj = drapeaux.get(drapeauChoisi).getX();
+							yObj = drapeaux.get(drapeauChoisi).getY();
+						}
+						// Si on a un drapeau, c'est sa base
+						else
+						{
+							xObj = joueurs.get(this.teamId).getBaseX();
+							yObj = joueurs.get(this.teamId).getBaseY();
+						}
+						
+						// On utilise la bonne commande pour aller sur l'objectif
+						Joueur currentPlayer = joueurs.get(this.teamId);
+						
 						
 						// On joue
+						String order = "";
 						ArrayList<Client.Dir> PossibleDirections = utils.MouvementPossibles(joueurs.get((int)this.teamId), joueurs);
-						int index = rand.nextInt(PossibleDirections.size());
-				        String order = PossibleDirections.get(index).code;
+						
+						
+						if (PossibleDirections.contains(Dir.EST) && xObj > currentPlayer.getX())
+						{
+							
+						}
+						else
+						{
+							int index = rand.nextInt(PossibleDirections.size());
+							order = PossibleDirections.get(index).code;
+						}
 						
 						//On affiche l'état du monde
 						for(Integer key: OrdreJoueurs)

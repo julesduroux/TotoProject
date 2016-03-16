@@ -15,6 +15,10 @@ public class Drapeau {
 	     return this.libre;
 	 }
 	 
+	 public void SetFree(boolean bool){
+	     this.libre = bool;
+	 }
+	 
 	 public Drapeau(int X, int Y)
 	 {     
 		 this.xPosition = X;
