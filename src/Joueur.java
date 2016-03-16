@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Joueur {
 	
@@ -9,8 +11,11 @@ public class Joueur {
 	 private int xBasePosition;
 	 private int yBasePosition;
 	 private int points;
+	 private boolean inactif;
+	 private boolean porteUnDrapeau;
+	 public ArrayList<Integer> immunites;
 	 private String status;
-
+	 private boolean MouvementCeTour;
 	 
 	 //Accesseurs
 	 public int getNbSautsRestants()
@@ -26,8 +31,8 @@ public class Joueur {
 	     return this.yPosition;
 	 }
 	 
-	 public String getStatus(){
-	     return this.status;
+	 public boolean IsStunned(){
+	     return this.status.equals("stunned");
 	 }
 	 
 	 public int getTeamID()
@@ -47,6 +52,27 @@ public class Joueur {
 	     return this.points;
 	 }
 	 
+	 public boolean IsInactive(){
+	     return this.inactif;
+	 }
+	 
+	 public boolean HasFlag(){
+	     return this.porteUnDrapeau;
+	 }
+	 
+	 public boolean HasMovedThisTurn(){
+		 return this.MouvementCeTour;
+	 }
+	 
+	 public boolean HasImmunity(int ennemi)
+	 {
+		 return immunites.contains(ennemi);
+	 }
+	 
+	 public boolean InBase(){
+		 return (this.xBasePosition == this.xPosition) && (this.yBasePosition == this.yPosition);
+	 }
+	 
 	 //Constructeur
 	 public Joueur(int pTeamID, int pNumeroJoueur)
 	 {     
@@ -57,6 +83,10 @@ public class Joueur {
 		 this.teamID = pTeamID;
 		 this.xBasePosition = 1;
 		 this.yBasePosition = 2 * pNumeroJoueur - 1;
+		 this.inactif = true;
+		 this.porteUnDrapeau = false;
+		 this.MouvementCeTour = false;
+		 this.immunites = new ArrayList<Integer>();
 	 } 
 	 
 	 //Mise à jour
@@ -64,17 +94,32 @@ public class Joueur {
 	 {
 		 if (Math.abs(this.xPosition - pNewX) + Math.abs(this.yPosition - pNewY) == 2)
 		 {
-			this.nbSauts -= 1; 
+			this.nbSauts -= 1;
 		 }
+		 if (Math.abs(this.xPosition - pNewX) + Math.abs(this.yPosition - pNewY) >= 1)
+		 {
+			this.inactif = false;
+			this.MouvementCeTour = true;
+		 }
+		 else
+		 {
+			 this.MouvementCeTour = false;
+		 }
+		 
 		 this.xPosition = pNewX;
 		 this.yPosition = pNewY;
 		 this.status = pEtat;
+		 if (pEtat.equals("stunned"))
+		 {
+			 this.porteUnDrapeau = false;
+		 }
 		 this.points = pPoints;
 	 }
 	 
 	 //Affichage
 	 public String Afficher()
 	 {
-		 return "Le joueur " + this.teamID + " est en position (" + this.xPosition + ", " + this.yPosition + "), a  " + this.points + " points, dispose de " + this.nbSauts + " sauts restants, est à l'état " + this.status + " et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + ").";
+		 //return "Le joueur	" + this.teamID + "	est en (	" + this.xPosition + "	,	" + this.yPosition + "	), a	" + this.points + "	points,	" + this.nbSauts + "	sauts restants, est	" + this.status + "	, a une immu contre	" + Arrays.toString(immunites.toArray()) + "	et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + ").";
+		 return "Le joueur " + this.teamID + " est en ( " + this.xPosition + " , " + this.yPosition + " ), a " + this.points + " points, " + this.nbSauts + " sauts restants, est " + this.status + ", a une immu contre " + Arrays.toString(immunites.toArray()) + " et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + ").";
 	 }
 }
