@@ -10,6 +10,112 @@ public final class utils {
 		return ((j1.getX() - j2.getX() == 0) && Math.abs(j1.getY() - j2.getY()) == 1) || ((j1.getY() - j2.getY() == 0) && Math.abs(j1.getX() - j2.getX()) == 1);
     }
     
+    public static boolean AreAdjascent(Joueur j, Drapeau d)
+    {
+		return ((j.getX() - d.getX() == 0) && Math.abs(j.getY() - d.getY()) == 1) || ((j.getY() - d.getY() == 0) && Math.abs(j.getX() - d.getX()) == 1);
+    }
+    
+    public static ArrayList<Client.Dir> getMovesToAttack(Joueur a, Joueur d)
+    {
+    	ArrayList<Client.Dir> directionsPossibles = new ArrayList<Client.Dir>();
+    	// Si les joueurs sont sur la même colonne
+    	if (a.getX() == d.getX())
+    	{
+    		if (a.getY() + 1  == d.getY())
+    		{
+    			directionsPossibles.add(Client.Dir.JUMP_SUD);
+    		}
+    		if (a.getY() - 1  == d.getY())
+    		{
+    			directionsPossibles.add(Client.Dir.JUMP_NORD);
+    		}
+    		if (a.getY() + 2  == d.getY())
+    		{
+    			directionsPossibles.add(Client.Dir.SUD);
+    		}
+    		if (a.getY() - 2  == d.getY())
+    		{
+    			directionsPossibles.add(Client.Dir.NORD);
+    		}
+    		if (a.getY() + 3  == d.getY())
+    		{
+    			directionsPossibles.add(Client.Dir.JUMP_SUD);
+    		}
+    		if (a.getY() - 3  == d.getY())
+    		{
+    			directionsPossibles.add(Client.Dir.JUMP_NORD);
+    		}
+    	}
+    	// Si les joueurs sont sur la même ligne
+    	if (a.getY() == d.getY())
+    	{
+    		if (a.getX() + 1  == d.getX())
+    		{
+    			directionsPossibles.add(Client.Dir.JUMP_EST);
+    		}
+    		if (a.getX() - 1  == d.getX())
+    		{
+    			directionsPossibles.add(Client.Dir.JUMP_OUEST);
+    		}
+    		if (a.getX() + 2  == d.getX())
+    		{
+    			directionsPossibles.add(Client.Dir.EST);
+    		}
+    		if (a.getX() - 2  == d.getX())
+    		{
+    			directionsPossibles.add(Client.Dir.OUEST);
+    		}
+    		if (a.getX() + 3  == d.getX())
+    		{
+    			directionsPossibles.add(Client.Dir.JUMP_EST);
+    		}
+    		if (a.getX() - 3  == d.getX())
+    		{
+    			directionsPossibles.add(Client.Dir.JUMP_OUEST);
+    		}
+    	}
+    	// Si les joueurs sont en diagonale
+    	if ((a.getX() - 1 == d.getX() ) && (a.getY() - 1 == d.getY()))
+		{
+    		directionsPossibles.add(Client.Dir.NORD);
+    		directionsPossibles.add(Client.Dir.OUEST);
+		}
+    	if ((a.getX() + 1 == d.getX() ) && (a.getY() + 1 == d.getY()))
+		{
+    		directionsPossibles.add(Client.Dir.SUD);
+    		directionsPossibles.add(Client.Dir.EST);
+		}
+    	if ((a.getX() + 1 == d.getX() ) && (a.getY() - 1 == d.getY()))
+		{
+    		directionsPossibles.add(Client.Dir.NORD);
+    		directionsPossibles.add(Client.Dir.EST);
+		}
+    	if ((a.getX() - 1 == d.getX() ) && (a.getY() + 1 == d.getY()))
+		{
+    		directionsPossibles.add(Client.Dir.SUD);
+    		directionsPossibles.add(Client.Dir.OUEST);
+		}
+    	// Si les joueurs sont en position de cavalier
+    	if ((a.getX() - 2 == d.getX() ) && (a.getY() - 1 == d.getY()))
+		{
+    		directionsPossibles.add(Client.Dir.JUMP_OUEST);
+		}
+    	if ((a.getX() + 2 == d.getX() ) && (a.getY() + 1 == d.getY()))
+		{
+    		directionsPossibles.add(Client.Dir.JUMP_EST);
+		}
+    	if ((a.getX() + 1 == d.getX() ) && (a.getY() - 2 == d.getY()))
+		{
+    		directionsPossibles.add(Client.Dir.JUMP_NORD);
+		}
+    	if ((a.getX() - 1 == d.getX() ) && (a.getY() + 2 == d.getY()))
+		{
+    		directionsPossibles.add(Client.Dir.JUMP_SUD);
+		}
+    	
+		return directionsPossibles;
+    }
+    
     public static ArrayList<Client.Dir> MouvementPossibles(Joueur j, Hashtable<Integer,Joueur> joueurs)
     {
     	ArrayList<Client.Dir> directionsPossibles = new ArrayList<Client.Dir>();

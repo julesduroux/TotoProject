@@ -303,20 +303,67 @@ public class Client implements Runnable {
 						}
 						
 						//On choisit l'objectif
+						// On joue
+						String order = "";
 						int xObj = 0;
 						int yObj = 0;
+						ArrayList<Client.Dir> PossibleDirections = utils.MouvementPossibles(currentPlayer, joueurs);
 						
 						// Quel que soit le mode de jeu
-						// S'il y a un adversaire avec un drapeau, que l'on a pas de drapeau, que l'on a une immunité vers l'adversaire
-						// Et qu'il n'en a pas contre nous
+						// S'il y a un adversaire avec un drapeau, que l'on a pas de drapeau,
+						// qu'il n'a pas d'immunité contre nous
 						// et que cet adversaire est à 1 case ou a deux case et qu'il nous reste des jumps on l'agresse
+						for (int joueur : OrdreJoueurs2)
+						{
+							// Si il a un drapeau
+							boolean test = joueurs.get(joueur).HasFlag();
+							// Si on n'a pas de drapeau
+							test = test && !currentPlayer.HasFlag();
+							// Si il n'a pas d'immunité contre nous
+							test = test && !joueurs.get(joueur).HasImmunity(currentPlayer.getTeamID());
+							// S'il est à portée d'attaque et que le mouvement est possible
+							//On regarde la liste des coups possibles pour attaquer
+							ArrayList<Client.Dir> moves = utils.getMovesToAttack(currentPlayer, joueurs.get(joueur));
+							//On retire les coups impossibles
+							Dir attaqueChoisie= null;
+							for (Dir attaque : moves)
+							{
+								if (PossibleDirections.contains(attaque))
+								{
+									attaqueChoisie=attaque;
+								}
+							}
+							// S'il reste un coup, on le fait
+							test = test && attaqueChoisie != null;
+							
+							if (test)
+							{
+								modeJeu = "sauvage";
+								order = attaqueChoisie.code;
+							}
+							
+						}
+						
+						
+						
 						int adversaireCible = 0;
 						if (modeJeu.equals("aggressif"))
 						{
 							int distanceMin = 999;
 							for (int joueur : OrdreJoueurs2)
 							{
+								// Si il a un drapeau
 								boolean test = joueurs.get(joueur).HasFlag();
+								// ou qu'il est à adjascent à un drapeau
+								boolean adjascent = false;
+								for (int drapeau : drapeauxLibres)
+								{
+									if (utils.AreAdjascent(joueurs.get(joueur), drapeaux.get(drapeau)))
+									{
+										adjascent = true;
+									}
+								}
+								test = test || adjascent;
 								// Si il n'a pas l'imunité contre nous
 								test = test && !joueurs.get(joueur).HasImmunity(currentPlayer.getTeamID());
 								// Si on est plus proche de sa base que lui
@@ -370,9 +417,8 @@ public class Client implements Runnable {
 							}
 						}
 						
-						// On joue
-						String order = "";
-						ArrayList<Client.Dir> PossibleDirections = utils.MouvementPossibles(currentPlayer, joueurs);
+						
+						
 						
 						if (modeJeu.equals("agressif") && adversaireCible != 0)
 						{
