@@ -16,6 +16,10 @@ public class Joueur {
 	 public ArrayList<Integer> immunites;
 	 private String status;
 	 private boolean MouvementCeTour;
+	 public int pointsPrevisonnels;
+	 public int champAnalyse;
+	 public ArrayList<Integer> drapeauxAPrendre;
+	 public boolean MaybeFlag;
 	 
 	 //Accesseurs
 	 public int getNbSautsRestants()
@@ -92,10 +96,14 @@ public class Joueur {
 		 this.porteUnDrapeau = false;
 		 this.MouvementCeTour = false;
 		 this.immunites = new ArrayList<Integer>();
+		 this.pointsPrevisonnels = 0;
+		 this.champAnalyse = 1;
+		 this.drapeauxAPrendre = new ArrayList<Integer>();
+		 this.MaybeFlag = false;
 	 } 
 	 
 	 //Mise à jour
-	 public void Update( int pNewX, int pNewY, String pEtat, int pPoints)
+	 public void Update( int pNewX, int pNewY, String pEtat, int pPoints, int pRound)
 	 {
 		 if (Math.abs(this.xPosition - pNewX) + Math.abs(this.yPosition - pNewY) == 2)
 		 {
@@ -114,17 +122,21 @@ public class Joueur {
 		 this.xPosition = pNewX;
 		 this.yPosition = pNewY;
 		 this.status = pEtat;
-		 if (pEtat.equals("stunned"))
+		 if (pEtat.equals("stunned") || (this.xPosition == this.xBasePosition && this.yPosition == this.yBasePosition) )
 		 {
 			 this.porteUnDrapeau = false;
 		 }
 		 this.points = pPoints;
+		 this.pointsPrevisonnels = pPoints;
+		 this.champAnalyse = pRound;
+		 this.drapeauxAPrendre = new ArrayList<Integer>();
+		 this.MaybeFlag = false;
 	 }
 	 
 	 //Affichage
 	 public String Afficher()
 	 {
 		 //return "Le joueur	" + this.teamID + "	est en (	" + this.xPosition + "	,	" + this.yPosition + "	), a	" + this.points + "	points,	" + this.nbSauts + "	sauts restants, est	" + this.status + "	, a une immu contre	" + Arrays.toString(immunites.toArray()) + "	et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + ").";
-		 return "Le joueur " + this.teamID + " est en (" + this.xPosition + ", " + this.yPosition + "), a " + this.points + " points, a un drapeau : " + this.porteUnDrapeau + ", a " + this.nbSauts + " sauts restants, est " + this.status + ", a une immu contre " + Arrays.toString(immunites.toArray()) + " et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + ").";
+		 return "Le joueur " + this.teamID + " est en (" + this.xPosition + ", " + this.yPosition + "), a " + this.points + " points, a un drapeau : " + this.porteUnDrapeau + ", a " + this.nbSauts + " sauts restants, est " + this.status + ", a une immu contre " + Arrays.toString(immunites.toArray()) + " et sa base est en (" + this.getBaseX() + ", " + this.getBaseY() + "), a "+this.pointsPrevisonnels+" Points previ, "+this.champAnalyse+" champAnalyse et "+this.drapeauxAPrendre +" drapeaux à prendre ";
 	 }
 }
